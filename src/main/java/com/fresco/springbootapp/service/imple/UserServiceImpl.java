@@ -1,11 +1,12 @@
 package com.fresco.springbootapp.service.imple;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.fresco.springbootapp.models.User;
 import com.fresco.springbootapp.repo.UserRepo;
 import com.fresco.springbootapp.service.UserService;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,6 +28,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(Integer id) {
-        return repo.findById(id).get();
+        return repo.findById(id).orElseThrow(() -> new RuntimeException("user with the given id not found"));
     }
 }

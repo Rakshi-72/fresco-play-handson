@@ -1,9 +1,11 @@
 package com.fresco.springbootapp.repo;
 
+import com.fresco.springbootapp.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.fresco.springbootapp.models.User;
+import java.util.Optional;
 
 public interface UserRepo extends JpaRepository<User, Integer> {
+    Optional<User> findByUsername(String username);
 
 }
