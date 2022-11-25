@@ -20,12 +20,12 @@ public class CartProduct {
     private Integer cpId;
 
     @ManyToOne
-    @JoinColumn(name = "cartId")
+    @JoinColumn(name = "cartId", referencedColumnName = "cartId")
     @JsonIgnore
     private Cart cart;
 
     @ManyToOne
-    @JoinColumn(name = "productId")
+    @JoinColumn(name = "productId", referencedColumnName = "productId")
     private Product product;
     private Integer quantity = 1;
 }

@@ -1,16 +1,13 @@
 package com.fresco.springbootapp.security;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import java.util.function.Function;
 
 @Component
 public class JwtUtils {
@@ -27,7 +24,8 @@ public class JwtUtils {
      * @return A JWT token
      */
     public String generateToken(UserDetails principal) {
-        Map<String, Object> claims = new HashMap<>();
+        // Map<String, Object> claims = new HashMap<>();
+        Claims claims = getClaimsFromUser(principal);
         return Jwts
                 .builder()
                 .setClaims(claims)
@@ -46,16 +44,16 @@ public class JwtUtils {
      * @param principal The user object that contains the user's information.
      * @return A JWT token
      */
-    // private Claims getClaimsFromUser(UserDetails principal) {
-    // // List<SimpleGrantedAuthority> auth = principal.getAuthorities()
-    // // .stream()
-    // // .map(s -> new SimpleGrantedAuthority(s.getAuthority()))
-    // // .toList();
+    private Claims getClaimsFromUser(UserDetails principal) {
+        // List<SimpleGrantedAuthority> auth = principal.getAuthorities()
+        // .stream()
+        // .map(s -> new SimpleGrantedAuthority(s.getAuthority()))
+        // .toList();
 
-    // Claims claims = Jwts.claims().setSubject(principal.getUsername());
-    // claims.put("authorities", principal.getAuthorities());
-    // return claims;
-    // }
+        Claims claims = Jwts.claims().setSubject(principal.getUsername());
+        claims.put("authorities", principal.getAuthorities());
+        return claims;
+    }
 
     /**
      * > If the username in the token matches the username in the user details and
@@ -73,6 +71,13 @@ public class JwtUtils {
 
     }
 
+    /**
+     * ExtractClaims is a function that takes a token and a function that takes a Claims object and returns a String, and
+     * returns a String.
+     *
+     * @param token The JWT token
+     * @return The username of the user who is logged in.
+     */
     public String getUsername(String token) {
         return extractClaims(token, Claims::getSubject);
     }

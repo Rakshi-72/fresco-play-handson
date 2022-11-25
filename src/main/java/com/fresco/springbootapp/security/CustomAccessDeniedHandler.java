@@ -9,27 +9,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.MediaType;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-public class ApiEntryPoint implements AuthenticationEntryPoint {
+public class CustomAccessDeniedHandler implements AccessDeniedHandler {
+
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException authException) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, HttpServletResponse response,
+            AccessDeniedException accessDeniedException) throws IOException, ServletException {
+
         Properties properties = new Properties();
-        properties.setProperty("status_code", Integer.toString(HttpServletResponse.SC_UNAUTHORIZED));
-        properties.setProperty("status", "UNAUTHORIZED");
+        properties.setProperty("status_code", "403");
+        properties.setProperty("status", "Forbidden");
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         OutputStream outputStream = response.getOutputStream();
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(outputStream, properties);
         outputStream.flush();
-
     }
+
 }

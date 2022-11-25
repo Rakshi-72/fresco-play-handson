@@ -1,6 +1,5 @@
 package com.fresco.springbootapp.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,19 +12,21 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import lombok.AllArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@AllArgsConstructor
 public class ApiSecurity extends WebSecurityConfigurerAdapter {
 
-    @Autowired
     private ApiEntryPoint entryPoint;
 
-    @Autowired
     private ApiFilter filter;
 
-    @Autowired
     private DaoAuthenticationProvider provider;
+
+    private CustomAccessDeniedHandler handler;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -51,6 +52,7 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
                 .authenticated()
                 .and()
                 .exceptionHandling()
+                .accessDeniedHandler(handler)
                 .authenticationEntryPoint(entryPoint)
                 .and()
                 .sessionManagement()

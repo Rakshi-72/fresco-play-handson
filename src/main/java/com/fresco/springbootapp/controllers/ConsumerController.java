@@ -1,31 +1,29 @@
 package com.fresco.springbootapp.controllers;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.fresco.springbootapp.models.Cart;
 import com.fresco.springbootapp.models.CartProduct;
 import com.fresco.springbootapp.models.Product;
+import com.fresco.springbootapp.models.User;
+import com.fresco.springbootapp.repo.UserRepo;
 import com.fresco.springbootapp.service.ConsumerService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/auth/consumer")
 public class ConsumerController {
 
-    @Autowired
     private ConsumerService service;
+
+    private UserRepo repo;
 
     @GetMapping("/products")
     public ResponseEntity<List<Product>> products() {
@@ -40,6 +38,18 @@ public class ConsumerController {
     @GetMapping("/cart")
     public ResponseEntity<Cart> getCart() {
         return service.getCart();
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(repo.findAll());
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<User> getCurrentUser() {
+        UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return ResponseEntity.ok(repo.findByUsername(user.getUsername()).get());
     }
 
     /**

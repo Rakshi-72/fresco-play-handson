@@ -1,26 +1,23 @@
 package com.fresco.springbootapp.service.imple;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
 import com.fresco.springbootapp.controllers.Utils;
 import com.fresco.springbootapp.models.Product;
 import com.fresco.springbootapp.models.User;
 import com.fresco.springbootapp.repo.ProductRepo;
 import com.fresco.springbootapp.service.SellerService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class SellerServiceImpl implements SellerService {
-    @Autowired
     private ProductRepo repo;
 
-    @Autowired
     private Utils utils;
 
-    @Override
     public ResponseEntity<List<Product>> getAllProducts() {
 
         User user = utils.getCurrentLoggedInUser();
@@ -42,18 +39,23 @@ public class SellerServiceImpl implements SellerService {
     public ResponseEntity<Product> saveProduct(Product product) {
         product.setSeller(utils.getCurrentLoggedInUser());
         return ResponseEntity.ok(repo.save(product));
-
     }
 
     @Override
     public void updateProduct(Product product) {
 
         Product fromDataBase = repo.findById(product.getProductId())
-                .orElseThrow(() -> new RuntimeException("user with the given id not present to update"));
+                .orElse(new Product());
+
+        System.out.println(product);
+        fromDataBase.setProductId(product.getProductId());
         fromDataBase.setSeller(product.getSeller());
         fromDataBase.setCategory(product.getCategory());
         fromDataBase.setPrice(product.getPrice());
         fromDataBase.setProductName(product.getProductName());
+        fromDataBase.getCategory().setCategoryId(product.getCategory().getCategoryId());
+        fromDataBase.setSeller(utils.getCurrentLoggedInUser());
+        System.out.println(fromDataBase);
 
         repo.save(fromDataBase);
 
